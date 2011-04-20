@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<script>
+
+var whitelist = safari.extension.settings.whitelist;
+whitelist = whitelist.split(',') || [];
+
+var isAllowed = function(url) {
+    var i = 0,
+        res = false;
+    
+    for (i = 0; i < whitelist.length; i++) {
+        if (url.match(whitelist[i])) {
+            res = true;
+            break;
+        }
+    }
+    
+    return res;
+};
+
+setInterval(function() {
+    var win = safari.application.activeBrowserWindow,
+        tabs = (win) ? win.tabs || [] : [],
+        tab, url, i;
+    
+    for (i = 0; i < tabs.length; i++) {
+        tab = tabs[i];
+        url = tab.url;
+        
+        if (!isAllowed(url)) {
+            return;
+        }
+        
+        if (!url.match('nocache') && url.match('.htm')) {
+            tab.url = url + "?nocache";
+        }
+    }
+}, 1000);
+
+</script>
